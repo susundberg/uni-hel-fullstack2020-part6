@@ -6,18 +6,18 @@ const initialState = {
 
 const counterReducer = (state = initialState, action) => {
   console.log(action)
-  switch (action.type) {
-    case 'GOOD':
-      return state
-    case 'OK':
-      return state
-    case 'BAD':
-      return state
-    case 'ZERO':
-      return state
-    default: return state
+  let newState = { ...state }
+
+  const actionLow = action.type.toLowerCase()
+
+  if ( ['good','ok','bad'].includes(actionLow) ) {
+    newState[actionLow] += 1
+    return newState
   }
-  
+  if ( actionLow === 'zero' ) {
+    return initialState
+  }
+  return state 
 }
 
 export default counterReducer
