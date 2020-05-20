@@ -8,10 +8,8 @@ const sortState = (items) => (
 const initialState = []
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
-
-  const find_id = (to_find) => (state.find(n => n.id === to_find))
+  // console.log('Ane state now: ', state)
+  // console.log('Ane action', action)
 
   switch (action.type) {
     case 'UPDATE':

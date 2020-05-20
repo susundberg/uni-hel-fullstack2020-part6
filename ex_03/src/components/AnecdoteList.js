@@ -1,36 +1,30 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { connect } from 'react-redux'
+
 import { vote } from '../reducers/anecdote'
 import { createNotification } from '../reducers/notification'
 
-const AnecdoteList = () => {
+const AnecdoteList = (props) => {
 
-  const anecdotes = useSelector(state => state.anecdotes)
-  const filter = useSelector(state => state.filter).toUpperCase()
-  const dispatch = useDispatch()
+
 
   const onVote = (anecdote) => {
-    dispatch(createNotification(`You voted: ${anecdote.content}`, 5 ))
-    dispatch(vote(anecdote))
+    props.createNotification(`You voted: ${anecdote.content}`, 5)
+    props.vote(anecdote)
   }
 
-  let filtered = anecdotes
-
-  if (filter !== '') {
-    filtered = anecdotes.filter(x => x.content.toUpperCase().includes(filter))
-  }
 
   return (
     <div id="ane-list">
       <h2> Anecdotes </h2>
-      {filtered.map(anecdote =>
-        <div key={anecdote.id}>
+      {props.anecdotes.map(x =>
+        <div key={x.id}>
           <div>
-            {anecdote.content}
+            {x.content}
           </div>
           <div>
-            has {anecdote.votes}
-            <button onClick={() => onVote(anecdote)}>vote</button>
+            has {x.votes}
+            <button onClick={() => onVote(x)}>vote</button>
           </div>
         </div>
       )}
@@ -39,4 +33,20 @@ const AnecdoteList = () => {
 }
 
 
-export default AnecdoteList
+
+const mapStateToProps = (state) => {
+  console.log("Map filter with", state.filter)
+  const filtValue = state.filter.toUpperCase()
+  const anecdotes = state.anecdotes.filter(x => x.content.toUpperCase().includes(filtValue))
+  return { anecdotes }
+}
+
+
+export default connect(
+  mapStateToProps,
+  { vote, createNotification }
+)(AnecdoteList)
+
+
+
+
