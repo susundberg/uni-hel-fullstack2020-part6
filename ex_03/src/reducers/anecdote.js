@@ -1,5 +1,5 @@
 
-
+import service from '../services/anecdote'
 
 const sortState = (items) => (
   items.sort((a, b) => (b.votes - a.votes))
@@ -11,17 +11,13 @@ const reducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
-  const find_id = () => (state.find(n => n.id === action.data.id))
+  const find_id = (to_find) => (state.find(n => n.id === to_find))
 
   switch (action.type) {
-    case 'VOTE':
-      const orig = find_id()
-      console.log("Vote:", orig)
-      if (!orig)
-        return state
-      const changed = { ...orig, votes: orig.votes + 1 }
-      console.log('Vote done', changed)
-      return sortState(state.map(x => x.id === action.data.id ? changed : x))
+    case 'UPDATE':
+      const changed  = action.data.object
+      console.log("Update:", changed.id, changed )
+      return sortState(state.map(x => x.id === changed.id ? changed : x))
     case 'CREATE':
       return sortState(state.concat(action.data.object))
     case 'INITIALIZE':
@@ -33,25 +29,31 @@ const reducer = (state = initialState, action) => {
   }
 }
 const vote = (id) => {
-  console.log('Vote', id)
-  return {
-    type: 'VOTE',
-    data: { id }
+  return async (dispatch) => {
+    console.log('Vote', id)
+    const object = await service.vote(id)
+    dispatch({ type: 'UPDATE', data: { object } })
   }
 }
 
-const createAnecdote = (object) => {
-  console.log('Create', object)
-  return {
-    type: 'CREATE',
-    data : { object }
+const createAnecdote = (content) => {
+  return async dispatch => {
+    console.log('Create', content)
+    const object = await service.createNew(content)
+    dispatch({
+      type: 'CREATE',
+      data: { object }
+    })
   }
 }
 
-const initialAnecdotes = (anecdotes) => {
-  return {
-    type: 'INITIALIZE',
-    data: { anecdotes }
+const initialAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await service.getAll()
+    dispatch({
+      type: 'INITIALIZE',
+      data: { anecdotes },
+    })
   }
 }
 

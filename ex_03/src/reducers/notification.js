@@ -21,9 +21,17 @@ const reducer = (state = initialState, action) => {
 }
 
 
-const createNotification = (msg) => ({ type: ACTION_TYPE_NOTIFICATION_CREATE, data: { msg } })
+const createNotification = (msg,timeout_s) => {
+    const timeout = () => new Promise(res => setTimeout(res, timeout_s*1000))
 
-const createHide = () => ({ type: ACTION_TYPE_NOTIFICATION_HIDE, data: { } })
+    return async (dispatch) => {
+      dispatch( { type: ACTION_TYPE_NOTIFICATION_CREATE, data: { msg } } )
+      await timeout()
+      dispatch( { type: ACTION_TYPE_NOTIFICATION_HIDE } )
+    }
+  }
+
+  
 
 export default reducer
-export { createNotification, createHide }
+export { createNotification }
